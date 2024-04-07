@@ -8,8 +8,6 @@ package com.mycompany.tutefivechatapplication;
  *
  * @author pramesh
  */
-
-
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.logging.Logger;
@@ -23,7 +21,6 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 public class Server {
 
     private static final int port = 12455;
@@ -33,29 +30,26 @@ public class Server {
     private static final String exitCommand = "exit";
     private static final String privateMsgIndicator = "/pm";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        try (ServerSocket server = new ServerSocket(port)) {
-            logs.info("Server Is Listining to the Port: " + port);
+        ServerSocket server = new ServerSocket(port);
+        logs.info("Server Is Listining to the Port: " + port);
 
-            while (true) {
-                Socket clientData = server.accept();
-                clients.add(clientData);
+        while (true) {
+            Socket clientData = server.accept();
+            clients.add(clientData);
 
-                Thread client = new Thread(() -> handleClient(clientData));
-                client.start();
-            }
-
-        } catch (IOException e) {
-            logs.log(Level.SEVERE, "Error Is Encounter" + e);
+            Thread clientTread = new Thread(() -> handleClient(clientData));
+            clientTread.start();
         }
+
     }
 
     private static void handleClient(Socket clientData) {
 
         try (
-                BufferedReader reader = new BufferedReader(new InputStreamReader(clientData.getInputStream())); 
-                PrintWriter writer = new PrintWriter(clientData.getOutputStream(), true);) {
+                /* A BufferedReader object named 'input' is created to read data from the client. It is initialized with an InputStreamReader which is constructed with the input stream of the client's socket. */
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientData.getInputStream())); /* A PrintWriter object named 'output' is created to send data to the client. It is initialized with the output stream of the client's socket. The second argument 'true' passed to the PrintWriter indicates that the PrintWriter should automatically flush its buffer after every write operation. */ PrintWriter writer = new PrintWriter(clientData.getOutputStream(), true);) {
 
             String getClientName = "Please Enter the Name: ";
             writer.println(getClientName);
@@ -72,7 +66,7 @@ public class Server {
 
             while ((clientMessage = reader.readLine()) != null) {
 
-                if (clientMessage.toLowerCase().equals(exitCommand)) {
+                if (clientMessage.equalsIgnoreCase(exitCommand)) {
                     break;
                 }
 
@@ -96,21 +90,21 @@ public class Server {
                     sendPrivateMessages(clientName, receiverName, privateMsg);
 
                 } else {
-                    
+
                     clientConnectedIndetifierMsg = clientName + " : " + clientMessage;
                     logs.info(clientConnectedIndetifierMsg);
                     broadCastMessages(clientConnectedIndetifierMsg, clientData);
                 }
 
             }
-            
-     clientNames.remove(clientName);
-     clients.remove(clientData);
-     
-     clientConnectedIndetifierMsg = clientName + " : " + "Left the conversation";
-     logs.info(clientConnectedIndetifierMsg);
-     
-      broadCastMessages(clientConnectedIndetifierMsg, null);
+
+            clientNames.remove(clientName);
+            clients.remove(clientData);
+
+            clientConnectedIndetifierMsg = clientName + " : " + "Left the conversation";
+            logs.info(clientConnectedIndetifierMsg);
+
+            broadCastMessages(clientConnectedIndetifierMsg, null);
 
         } catch (IOException e) {
             logs.log(Level.SEVERE, "This error is encounter in handleClient method => " + e);
@@ -137,15 +131,14 @@ public class Server {
 //        for (int i = 0; i < clients.size(); i++){
 //            Socket client = clients.get(i);
 //        }
+        for (Socket clientSocket : clients) {
 
-        for (Socket client : clients) {
-            
-            System.err.println(client);
-            
-            if (client != excludeClient) {
+            System.err.println(clientSocket);
 
-                try (PrintWriter outputMessage = new PrintWriter(client.getOutputStream(), true)) {
-                    
+            if (clientSocket != excludeClient) {
+
+                try {
+                    PrintWriter outputMessage = new PrintWriter(clientSocket.getOutputStream(), true);
                     System.err.println("Testing");
                     outputMessage.println(message);
 

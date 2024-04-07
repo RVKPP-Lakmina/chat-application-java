@@ -27,7 +27,9 @@ public class Client {
 
     public static void main(String[] args) {
 
-        try (Socket clientSocket = new Socket(host, port)) {
+        try {
+            Socket clientSocket = new Socket(host, port);
+                    
             logs.info("The Client is conneted to" + host + port);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -46,7 +48,7 @@ public class Client {
                     /* This is a loop where the client continuously reads messages from the server and prints them to the console. */
                     String serverMessage;
                     while ((serverMessage = reader.readLine()) != null) {
-                        System.out.println(serverMessage);
+                         logs.info(serverMessage);
                     }
                 } catch (IOException e) {
                     /* Any IOExceptions are caught and their stack trace is printed to the console. */
@@ -64,7 +66,7 @@ public class Client {
 
                 writter.println(message);
 
-                if (message.toLowerCase().equals(exitCommand)) {
+                if (message.equalsIgnoreCase(exitCommand)) {
                     break;
                 }
 
@@ -78,19 +80,19 @@ public class Client {
         }
     }
 
-    private static void clientMessageHandler(BufferedReader reader) {
-        String serverMessage;
-        try {
-
-            while ((serverMessage = reader.readLine()) != null) {
-
-                logs.info(serverMessage);
-            }
-
-        } catch (IOException e) {
-            logs.log(Level.SEVERE, "Error is Encountered in clientMessageHandler Method" + e);
-        }
-
-    }
+//    private static void clientMessageHandler(BufferedReader reader) {
+//        String serverMessage;
+//        try {
+//
+//            while ((serverMessage = reader.readLine()) != null) {
+//
+//                logs.info(serverMessage);
+//            }
+//
+//        } catch (IOException e) {
+//            logs.log(Level.SEVERE, "Error is Encountered in clientMessageHandler Method" + e);
+//        }
+//
+//    }
 
 }

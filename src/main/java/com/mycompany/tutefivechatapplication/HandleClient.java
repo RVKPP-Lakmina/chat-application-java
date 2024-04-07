@@ -35,7 +35,8 @@ public class HandleClient implements Runnable {
     @Override
     public void run() {
         try (
-                BufferedReader reader = new BufferedReader(new InputStreamReader(clientData.getInputStream())); PrintWriter writer = new PrintWriter(clientData.getOutputStream(), true);) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientData.getInputStream())); 
+                PrintWriter writer = new PrintWriter(clientData.getOutputStream(), true);) {
 
             String getClientName = "Please Enter the Name: ";
             writer.println(getClientName);
