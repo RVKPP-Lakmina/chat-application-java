@@ -161,9 +161,9 @@ public class Server {
             Socket receiveSocketDetails = clients.get(receiverIndex);
 
             try {
-                PrintWriter outputMessage = new PrintWriter(receiveSocketDetails.getOutputStream(), true)
+                PrintWriter outputMessage = new PrintWriter(receiveSocketDetails.getOutputStream(), true);
 
-                String message = "[privete message from" + userName + "to" + receiverName + "]: " + messageToOther;
+                String message = "[Private message from" + userName + " to " + receiverName + "]: " + messageToOther;
                 outputMessage.println(message);
 
             } catch (IOException e) {
